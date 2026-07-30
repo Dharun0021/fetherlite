@@ -8,6 +8,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
+  <script>
+    const savedTheme = localStorage.getItem('theme');
+    const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+    if (savedTheme === 'light' || (!savedTheme && prefersLight)) {
+      document.documentElement.classList.add('light-theme');
+    }
+  </script>
 </head>
 <body>
 
@@ -28,9 +35,34 @@
     </div>
 
     <div class="header-right">
-      <div class="live-badge">
-        <span class="live-dot"></span>
-        <span class="live-text">LIVE</span>
+      <div class="header-top-row">
+        <!-- Theme Toggle -->
+        <button class="theme-toggle" id="theme-toggle" title="Toggle Theme" aria-label="Toggle light or dark theme">
+          <div class="toggle-icon-wrap">
+            <svg class="toggle-svg sun-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="5" fill="currentColor"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+          </div>
+          <div class="toggle-icon-wrap">
+            <svg class="toggle-svg moon-svg" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+          </div>
+          <span class="toggle-slider"></span>
+        </button>
+
+        <div class="live-badge">
+          <span class="live-dot"></span>
+          <span class="live-text">LIVE</span>
+        </div>
       </div>
       <div class="header-time">
         <span class="time-value" id="live-time">--:-- --</span>
@@ -86,7 +118,7 @@
             <ellipse cx="160" cy="178" rx="150" ry="90" fill="url(#gaugeBg)"/>
 
             <!-- Dark track -->
-            <path d="M 32 178 A 128 128 0 0 1 288 178"
+            <path class="gauge-track" d="M 32 178 A 128 128 0 0 1 288 178"
               stroke="#07192E" stroke-width="36" fill="none" stroke-linecap="round"/>
 
             <!-- Arc length = 402.1 | Dasharray = "draw totalLength" | dashoffset = -start -->
@@ -140,12 +172,12 @@
             <text x="302" y="205" fill="#8AABCC" font-size="12" font-family="Poppins" font-weight="700" text-anchor="middle">500</text>
 
             <!-- Needle -->
-            <line x1="160" y1="178" x2="63" y2="113"
+            <line class="gauge-needle" x1="160" y1="178" x2="63" y2="113"
               stroke="white" stroke-width="4.5" stroke-linecap="round"
               filter="url(#needleGlow)"/>
             <!-- Needle pivot -->
-            <circle cx="160" cy="178" r="11" fill="#061320" stroke="rgba(255,255,255,0.6)" stroke-width="2"/>
-            <circle cx="160" cy="178" r="5"  fill="white"/>
+            <circle class="gauge-pivot-outer" cx="160" cy="178" r="11" fill="#061320" stroke="rgba(255,255,255,0.6)" stroke-width="2"/>
+            <circle class="gauge-pivot-inner" cx="160" cy="178" r="5"  fill="white"/>
           </svg>
 
           <!-- Center text overlay -->
@@ -171,112 +203,50 @@
       <!-- Right column: status cards + sensor cards stacked -->
       <div class="right-column">
 
-        <!-- Status Cards Row -->
-        <div class="status-grid">
-
-          <!-- Card 1: Air Quality — green shield with checkmark -->
-          <div class="status-card card">
-            <div class="status-icon shield-icon">
-              <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-                <path d="M20 4L35 10.5V21C35 29 28.5 35.5 20 38C11.5 35.5 5 29 5 21V10.5L20 4Z" fill="url(#shieldG)"/>
-                <path d="M13 20.5L17.5 25L27 15" stroke="white" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
-                <defs>
-                  <linearGradient id="shieldG" x1="5" y1="4" x2="35" y2="38" gradientUnits="userSpaceOnUse">
-                    <stop stop-color="#4ADE80"/>
-                    <stop offset="1" stop-color="#16A34A"/>
-                  </linearGradient>
-                </defs>
-              </svg>
+        <!-- Status Banner Row -->
+        <div class="status-grid single-item">
+          <!-- Card 1: Air Quality Redesigned Premium Banner -->
+          <div class="status-card card air-quality-banner">
+            <div class="banner-left">
+              <div class="status-icon shield-icon">
+                <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                  <path d="M20 4L35 10.5V21C35 29 28.5 35.5 20 38C11.5 35.5 5 29 5 21V10.5L20 4Z" fill="url(#shieldG)"/>
+                  <path d="M13 20.5L17.5 25L27 15" stroke="white" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+                  <defs>
+                    <linearGradient id="shieldG" x1="5" y1="4" x2="35" y2="38" gradientUnits="userSpaceOnUse">
+                      <stop stop-color="#4ADE80"/>
+                      <stop offset="1" stop-color="#16A34A"/>
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </div>
+              <div class="status-info">
+                <p class="status-title">AIR QUALITY SYSTEM</p>
+                <p class="status-value s-green">Acceptable</p>
+              </div>
             </div>
-            <div class="status-info">
-              <p class="status-title">AIR QUALITY</p>
-              <p class="status-value s-green">Acceptable</p>
-              <p class="status-sub">AQI 93</p>
-              <p class="status-meta">Satisfactory</p>
+            
+            <div class="banner-divider"></div>
+            
+            <div class="banner-detail">
+              <span class="detail-label">CURRENT STATUS</span>
+              <span class="detail-value text-green">Satisfactory</span>
             </div>
-          </div>
-
-          <!-- Card 2: Filtration — cyan filter icon with horizontal lines + dots -->
-          <div class="status-card card">
-            <div class="status-icon filter-icon">
-              <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-                <!-- outer rounded rect bg -->
-                <rect x="5" y="5" width="30" height="30" rx="6" fill="rgba(0,200,255,0.12)"/>
-                <!-- vertical side bars -->
-                <rect x="9"  y="10" width="3" height="20" rx="1.5" fill="#00D4FF" opacity="0.7"/>
-                <rect x="28" y="10" width="3" height="20" rx="1.5" fill="#00D4FF" opacity="0.7"/>
-                <!-- horizontal filter lines -->
-                <line x1="12" y1="14" x2="28" y2="14" stroke="#00D4FF" stroke-width="2" stroke-linecap="round"/>
-                <line x1="12" y1="20" x2="28" y2="20" stroke="#00D4FF" stroke-width="2" stroke-linecap="round"/>
-                <line x1="12" y1="26" x2="28" y2="26" stroke="#00D4FF" stroke-width="2" stroke-linecap="round"/>
-                <!-- dots on the lines -->
-                <circle cx="18" cy="14" r="2.5" fill="#00D4FF"/>
-                <circle cx="23" cy="20" r="2.5" fill="#00D4FF"/>
-                <circle cx="18" cy="26" r="2.5" fill="#00D4FF"/>
-              </svg>
+            
+            <div class="banner-divider"></div>
+            
+            <div class="banner-detail">
+              <span class="detail-label">AQI LEVEL</span>
+              <span class="detail-value text-white">93 AQI</span>
             </div>
-            <div class="status-info">
-              <p class="status-title">FILTRATION</p>
-              <p class="status-value s-cyan">MERV-13 Filters</p>
-              <p class="status-sub-badge active">Active</p>
-              <p class="status-meta">Running</p>
+            
+            <div class="banner-divider"></div>
+            
+            <div class="banner-right-info">
+              <span class="live-dot"></span>
+              <p class="banner-desc">Air quality is considered satisfactory, and air pollution poses little or no risk in the living environment.</p>
             </div>
           </div>
-
-          <!-- Card 3: Ventilation — green 4-blade fan -->
-          <div class="status-card card">
-            <div class="status-icon fan-icon">
-              <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-                <!-- Blade 1: top -->
-                <path d="M20 20 C20 20 18 14 14 11 C12 10 10 10 11 13 C12 16 17 18 20 20Z" fill="#4ADE80"/>
-                <!-- Blade 2: right -->
-                <path d="M20 20 C20 20 26 22 29 26 C30 28 30 30 27 29 C24 28 22 23 20 20Z" fill="#4ADE80"/>
-                <!-- Blade 3: bottom -->
-                <path d="M20 20 C20 20 22 26 26 29 C28 30 30 30 29 27 C28 24 23 22 20 20Z" fill="#22C55E"/>
-                <!-- Blade 4: left -->
-                <path d="M20 20 C20 20 14 18 11 14 C10 12 10 10 13 11 C16 12 18 17 20 20Z" fill="#22C55E"/>
-                <!-- Center circle -->
-                <circle cx="20" cy="20" r="4" fill="#4ADE80"/>
-                <circle cx="20" cy="20" r="2" fill="#061320"/>
-                <!-- Outer ring -->
-                <circle cx="20" cy="20" r="16" stroke="#4ADE80" stroke-width="1.5" fill="none" opacity="0.3"/>
-              </svg>
-            </div>
-            <div class="status-info">
-              <p class="status-title">VENTILATION</p>
-              <p class="status-value s-green">Fresh Air Supply</p>
-              <p class="status-sub-badge active">Active</p>
-              <p class="status-meta">Normal</p>
-            </div>
-          </div>
-
-          <!-- Card 4: Environment — purple leaf -->
-          <div class="status-card card">
-            <div class="status-icon env-icon">
-              <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-                <!-- Leaf shape: outer fill -->
-                <path d="M20 34C20 34 8 28 8 18C8 10 14 5 20 5C26 5 32 10 32 18C32 28 20 34 20 34Z" fill="url(#leafG)"/>
-                <!-- Center vein -->
-                <path d="M20 34L20 18" stroke="rgba(255,255,255,0.4)" stroke-width="1.5" stroke-linecap="round"/>
-                <!-- Side veins -->
-                <path d="M20 26C18 23 14 22 12 20" stroke="rgba(255,255,255,0.3)" stroke-width="1" stroke-linecap="round"/>
-                <path d="M20 22C22 19 26 18 28 16" stroke="rgba(255,255,255,0.3)" stroke-width="1" stroke-linecap="round"/>
-                <defs>
-                  <linearGradient id="leafG" x1="8" y1="5" x2="32" y2="34" gradientUnits="userSpaceOnUse">
-                    <stop stop-color="#C87CFF"/>
-                    <stop offset="1" stop-color="#7C22CC"/>
-                  </linearGradient>
-                </defs>
-              </svg>
-            </div>
-            <div class="status-info">
-              <p class="status-title">ENVIRONMENT</p>
-              <p class="status-value s-purple">Safe &amp; Healthy</p>
-              <p class="status-sub">Comfortable for</p>
-              <p class="status-meta">Occupants</p>
-            </div>
-          </div>
-
         </div><!-- /status-grid -->
 
         <!-- Sensor Cards Row -->
@@ -502,15 +472,15 @@
               </filter>
             </defs>
             <!-- Grid lines -->
-            <line x1="0" y1="20"  x2="840" y2="20"  stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
-            <line x1="0" y1="60"  x2="840" y2="60"  stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
-            <line x1="0" y1="100" x2="840" y2="100" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
-            <line x1="0" y1="140" x2="840" y2="140" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+            <line class="chart-grid-line" x1="0" y1="20"  x2="840" y2="20"  stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+            <line class="chart-grid-line" x1="0" y1="60"  x2="840" y2="60"  stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+            <line class="chart-grid-line" x1="0" y1="100" x2="840" y2="100" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+            <line class="chart-grid-line" x1="0" y1="140" x2="840" y2="140" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
             <!-- Y-axis labels -->
-            <text x="0" y="23"  font-family="Poppins" font-size="11" fill="rgba(149,181,216,0.7)">150</text>
-            <text x="0" y="63"  font-family="Poppins" font-size="11" fill="rgba(149,181,216,0.7)">100</text>
-            <text x="0" y="103" font-family="Poppins" font-size="11" fill="rgba(149,181,216,0.7)">50</text>
-            <text x="0" y="143" font-family="Poppins" font-size="11" fill="rgba(149,181,216,0.7)">0</text>
+            <text class="chart-label" x="0" y="23"  font-family="Poppins" font-size="11" fill="rgba(149,181,216,0.7)">150</text>
+            <text class="chart-label" x="0" y="63"  font-family="Poppins" font-size="11" fill="rgba(149,181,216,0.7)">100</text>
+            <text class="chart-label" x="0" y="103" font-family="Poppins" font-size="11" fill="rgba(149,181,216,0.7)">50</text>
+            <text class="chart-label" x="0" y="143" font-family="Poppins" font-size="11" fill="rgba(149,181,216,0.7)">0</text>
             <!-- Trend area fill -->
             <path d="M20,100 C60,98 100,90 130,75 C155,63 165,58 185,58
                      C240,58 260,65 300,70 C340,75 360,80 400,85
@@ -528,15 +498,15 @@
               stroke="#A8E63C" stroke-width="2.5" fill="none" stroke-linecap="round"
               filter="url(#trendGlow)"/>
             <!-- MAX marker -->
-            <circle cx="185" cy="58" r="7" fill="#0A1F35" stroke="#A8E63C" stroke-width="2"/>
+            <circle class="chart-marker" cx="185" cy="58" r="7" fill="#0A1F35" stroke="#A8E63C" stroke-width="2"/>
             <rect x="155" y="38" width="72" height="22" rx="6" fill="#FF9C2A"/>
             <text x="191" y="53" text-anchor="middle" font-family="Poppins" font-size="11" font-weight="700" fill="white">MAX 102</text>
             <!-- MIN marker -->
-            <circle cx="610" cy="100" r="7" fill="#0A1F35" stroke="#A8E63C" stroke-width="2"/>
+            <circle class="chart-marker" cx="610" cy="100" r="7" fill="#0A1F35" stroke="#A8E63C" stroke-width="2"/>
             <rect x="582" y="108" width="60" height="22" rx="6" fill="#22C55E"/>
             <text x="612" y="123" text-anchor="middle" font-family="Poppins" font-size="11" font-weight="700" fill="#061320">MIN 69</text>
             <!-- Current value (end) -->
-            <circle cx="830" cy="97" r="7" fill="#0A1F35" stroke="#A8E63C" stroke-width="2.5"/>
+            <circle class="chart-marker" cx="830" cy="97" r="7" fill="#0A1F35" stroke="#A8E63C" stroke-width="2.5"/>
             <text x="828" y="88" text-anchor="middle" font-family="Poppins" font-size="16" font-weight="800" fill="#A8E63C">93</text>
           </svg>
 
@@ -638,6 +608,13 @@
     }
     updateClock();
     setInterval(updateClock, 1000);
+
+    // Theme toggle interaction
+    const themeToggle = document.getElementById('theme-toggle');
+    themeToggle.addEventListener('click', () => {
+      const isLight = document.documentElement.classList.toggle('light-theme');
+      localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    });
   </script>
 
 </body>
