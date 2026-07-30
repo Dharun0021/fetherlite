@@ -285,7 +285,7 @@ body {
 }
 
 .card-title {
-  font-size: 16px;
+  font-size: 19px;
   font-weight: 700;
   color: var(--dark-text);
 }
@@ -417,7 +417,7 @@ body {
 }
 
 .banner-headline {
-  font-size: 15.5px;
+  font-size: 17.5px;
   font-weight: 700;
   color: var(--green);
 }
@@ -512,7 +512,7 @@ body {
 .tvoc-card .sensor-icon-wrap { background-color: #F3E8FF; }
 
 .sensor-title {
-  font-size: 11px;
+  font-size: 13.5px;
   font-weight: 700;
   color: var(--label-text);
   white-space: nowrap;
@@ -675,8 +675,8 @@ body {
 }
 
 .stat-label {
-  font-size: 11px;
-  font-weight: 500;
+  font-size: 13px;
+  font-weight: 700;
   color: var(--label-text);
   text-transform: uppercase;
   letter-spacing: 0.5px;
