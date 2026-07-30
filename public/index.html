@@ -1,620 +1,486 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="light-theme">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=1920, initial-scale=1.0" />
+  <meta name="viewport" content="width=1280, initial-scale=1.0" />
   <title>Optibyte – Air Quality Monitoring</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
   <script>
     const savedTheme = localStorage.getItem('theme');
-    const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
-    if (savedTheme === 'light' || (!savedTheme && prefersLight)) {
-      document.documentElement.classList.add('light-theme');
+    if (savedTheme === 'dark') {
+      document.documentElement.classList.remove('light-theme');
     }
   </script>
 </head>
 <body>
 
-  <!-- ═══════════════════════ HEADER ═══════════════════════ -->
-  <header class="header">
-    <div class="header-logo">
-      <div class="logo-mark">
-        <img src="optibyte-logo.png" alt="Optibyte logo" width="48" height="48" style="object-fit:contain;filter:drop-shadow(0 0 6px rgba(74,222,128,0.4))"/>
-      </div>
-      <div class="logo-text">
-        <span class="logo-name">Optibyte</span>
-      </div>
-    </div>
-
-    <div class="header-title">
-      <h1 class="main-title">AIR <span class="title-gradient">QUALITY MONITORING</span></h1>
-      <p class="subtitle">LIVING ROOM, CHENNAI</p>
-    </div>
-
-    <div class="header-right">
-      <div class="header-top-row">
-        <!-- Theme Toggle -->
-        <button class="theme-toggle" id="theme-toggle" title="Toggle Theme" aria-label="Toggle light or dark theme">
-          <div class="toggle-icon-wrap">
-            <svg class="toggle-svg sun-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="5" fill="currentColor"></circle>
-              <line x1="12" y1="1" x2="12" y2="3"></line>
-              <line x1="12" y1="21" x2="12" y2="23"></line>
-              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-              <line x1="1" y1="12" x2="3" y2="12"></line>
-              <line x1="21" y1="12" x2="23" y2="12"></line>
-              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-            </svg>
-          </div>
-          <div class="toggle-icon-wrap">
-            <svg class="toggle-svg moon-svg" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-            </svg>
-          </div>
-          <span class="toggle-slider"></span>
-        </button>
-
-        <div class="live-badge">
-          <span class="live-dot"></span>
-          <span class="live-text">LIVE</span>
+  <div class="app-container">
+    
+    <!-- ═══════════════════════ SIDEBAR ═══════════════════════ -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-mark">
+          <img src="optibyte-logo.png" alt="Optibyte logo" width="36" height="36" />
         </div>
+        <span class="logo-name">OptiByte</span>
       </div>
-      <div class="header-time">
-        <span class="time-value" id="live-time">--:-- --</span>
-        <span class="time-date" id="live-date">-- --- ---- &nbsp;|&nbsp; -------</span>
-      </div>
-    </div>
-  </header>
 
-  <!-- ═══════════════════════ MAIN CONTENT ═══════════════════════ -->
-  <main class="dashboard">
-
-    <!-- ── Row 1: Gauge + Right Column ── -->
-    <section class="row-top">
-
-      <!-- AQI Gauge Panel -->
-      <div class="gauge-panel card">
-        <div class="gauge-wrap">
-          <!--
-            SVG Gauge: center=(160,178), radius=128
-            Arc: M(32,178) A(128,128) 0 0 1 (288,178)
-            Arc length = π × 128 = 402.1
-            Segments by AQI range:
-              0-50   = 10%  → 40.2px  green   #3DDB6E
-              50-100 = 10%  → 40.2px  lime    #A8E63C
-              100-200= 20%  → 80.4px  yellow  #FFD43B
-              200-300= 20%  → 80.4px  orange  #FF9C2A
-              300-400= 20%  → 80.4px  red     #FF3B3B
-              400-500= 20%  → 80.4px  purple  #9B3DFF
-
-            Needle: AQI=93, fraction=93/500=0.186
-            Angle from left (180°): 0.186×180°=33.5° swept
-            SVG angle = 180° - 33.5° = 146.5°
-            cos(146.5°)=-0.8348, sin(146.5°)=0.5505
-            tip = (160+118×(-0.835), 178-118×0.550) = (61.5, 113.1)
-          -->
-          <svg class="gauge-svg" viewBox="0 0 320 220" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <radialGradient id="gaugeBg" cx="50%" cy="85%" r="70%">
-                <stop offset="0%" stop-color="#0A2240" stop-opacity="0.9"/>
-                <stop offset="100%" stop-color="#020B18" stop-opacity="0"/>
-              </radialGradient>
-              <filter id="segGlow" x="-30%" y="-30%" width="160%" height="160%">
-                <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur"/>
-                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-              </filter>
-              <filter id="needleGlow" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur"/>
-                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-              </filter>
-            </defs>
-
-            <!-- Radial background glow -->
-            <ellipse cx="160" cy="178" rx="150" ry="90" fill="url(#gaugeBg)"/>
-
-            <!-- Dark track -->
-            <path class="gauge-track" d="M 32 178 A 128 128 0 0 1 288 178"
-              stroke="#07192E" stroke-width="36" fill="none" stroke-linecap="round"/>
-
-            <!-- Arc length = 402.1 | Dasharray = "draw totalLength" | dashoffset = -start -->
-
-            <!-- Seg 1: 0–50  Excellent  #3DDB6E  draw=40.2 start=0 -->
-            <path d="M 32 178 A 128 128 0 0 1 288 178"
-              stroke="#3DDB6E" stroke-width="34" fill="none" stroke-linecap="butt"
-              stroke-dasharray="40.2 402.1" stroke-dashoffset="0"
-              filter="url(#segGlow)"/>
-
-            <!-- Seg 2: 50–100  Good  #A8E63C  draw=40.2 start=40.2 -->
-            <path d="M 32 178 A 128 128 0 0 1 288 178"
-              stroke="#A8E63C" stroke-width="34" fill="none" stroke-linecap="butt"
-              stroke-dasharray="40.2 402.1" stroke-dashoffset="-40.2"
-              filter="url(#segGlow)"/>
-
-            <!-- Seg 3: 100–200  Moderate  #FFD43B  draw=80.4 start=80.4 -->
-            <path d="M 32 178 A 128 128 0 0 1 288 178"
-              stroke="#FFD43B" stroke-width="34" fill="none" stroke-linecap="butt"
-              stroke-dasharray="80.4 402.1" stroke-dashoffset="-80.4"
-              filter="url(#segGlow)"/>
-
-            <!-- Seg 4: 200–300  Poor  #FF9C2A  draw=80.4 start=160.8 -->
-            <path d="M 32 178 A 128 128 0 0 1 288 178"
-              stroke="#FF9C2A" stroke-width="34" fill="none" stroke-linecap="butt"
-              stroke-dasharray="80.4 402.1" stroke-dashoffset="-160.8"
-              filter="url(#segGlow)"/>
-
-            <!-- Seg 5: 300–400  Severe  #FF3B3B  draw=80.4 start=241.2 -->
-            <path d="M 32 178 A 128 128 0 0 1 288 178"
-              stroke="#FF3B3B" stroke-width="34" fill="none" stroke-linecap="butt"
-              stroke-dasharray="80.4 402.1" stroke-dashoffset="-241.2"
-              filter="url(#segGlow)"/>
-
-            <!-- Seg 6: 400–500  Hazardous  #9B3DFF  draw=80.4 start=321.6 -->
-            <path d="M 32 178 A 128 128 0 0 1 288 178"
-              stroke="#9B3DFF" stroke-width="34" fill="none" stroke-linecap="butt"
-              stroke-dasharray="80.4 402.1" stroke-dashoffset="-321.6"
-              filter="url(#segGlow)"/>
-
-            <!-- subtle inner edge shadow to give arc depth -->
-            <path d="M 32 178 A 128 128 0 0 1 288 178"
-              stroke="rgba(0,0,0,0.35)" stroke-width="2" fill="none"/>
-
-            <!-- Scale labels — positioned just outside the arc -->
-            <text x="18"  y="205" fill="#8AABCC" font-size="12" font-family="Poppins" font-weight="700" text-anchor="middle">0</text>
-            <text x="52"  y="62"  fill="#8AABCC" font-size="12" font-family="Poppins" font-weight="700" text-anchor="middle">100</text>
-            <text x="160" y="22"  fill="#8AABCC" font-size="12" font-family="Poppins" font-weight="700" text-anchor="middle">200</text>
-            <text x="268" y="62"  fill="#8AABCC" font-size="12" font-family="Poppins" font-weight="700" text-anchor="middle">300</text>
-            <text x="310" y="148" fill="#8AABCC" font-size="12" font-family="Poppins" font-weight="700" text-anchor="middle">400</text>
-            <text x="302" y="205" fill="#8AABCC" font-size="12" font-family="Poppins" font-weight="700" text-anchor="middle">500</text>
-
-            <!-- Needle -->
-            <line class="gauge-needle" x1="160" y1="178" x2="63" y2="113"
-              stroke="white" stroke-width="4.5" stroke-linecap="round"
-              filter="url(#needleGlow)"/>
-            <!-- Needle pivot -->
-            <circle class="gauge-pivot-outer" cx="160" cy="178" r="11" fill="#061320" stroke="rgba(255,255,255,0.6)" stroke-width="2"/>
-            <circle class="gauge-pivot-inner" cx="160" cy="178" r="5"  fill="white"/>
+      <nav class="sidebar-nav">
+        <a href="#" class="nav-item active" id="nav-dashboard">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="9"></rect>
+            <rect x="14" y="3" width="7" height="5"></rect>
+            <rect x="14" y="12" width="7" height="9"></rect>
+            <rect x="3" y="16" width="7" height="5"></rect>
           </svg>
-
-          <!-- Center text overlay -->
-          <div class="gauge-center">
-            <p class="gauge-label-top">OVERALL AQI</p>
-            <p class="gauge-value">93</p>
-            <p class="gauge-status">SATISFACTORY</p>
-            <p class="gauge-desc">Air quality is acceptable<br/>for general public</p>
-          </div>
-        </div>
-
-        <!-- Legend -->
-        <div class="gauge-legend">
-          <div class="legend-item"><span class="legend-dot" style="background:#3DDB6E"></span><span class="legend-lbl">0–50 Excellent</span></div>
-          <div class="legend-item"><span class="legend-dot" style="background:#A8E63C"></span><span class="legend-lbl">51–100 Good</span></div>
-          <div class="legend-item"><span class="legend-dot" style="background:#FFD43B"></span><span class="legend-lbl">101–200 Moderate</span></div>
-          <div class="legend-item"><span class="legend-dot" style="background:#FF9C2A"></span><span class="legend-lbl">201–300 Poor</span></div>
-          <div class="legend-item"><span class="legend-dot" style="background:#FF3B3B"></span><span class="legend-lbl">301–400 Severe</span></div>
-          <div class="legend-item"><span class="legend-dot" style="background:#9B3DFF"></span><span class="legend-lbl">401–500 Hazardous</span></div>
-        </div>
-      </div>
-
-      <!-- Right column: status cards + sensor cards stacked -->
-      <div class="right-column">
-
-        <!-- Status Banner Row -->
-        <div class="status-grid single-item">
-          <!-- Card 1: Air Quality Redesigned Premium Banner -->
-          <div class="status-card card air-quality-banner">
-            <div class="banner-left">
-              <div class="status-icon shield-icon">
-                <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-                  <path d="M20 4L35 10.5V21C35 29 28.5 35.5 20 38C11.5 35.5 5 29 5 21V10.5L20 4Z" fill="url(#shieldG)"/>
-                  <path d="M13 20.5L17.5 25L27 15" stroke="white" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
-                  <defs>
-                    <linearGradient id="shieldG" x1="5" y1="4" x2="35" y2="38" gradientUnits="userSpaceOnUse">
-                      <stop stop-color="#4ADE80"/>
-                      <stop offset="1" stop-color="#16A34A"/>
-                    </linearGradient>
-                  </defs>
-                </svg>
-              </div>
-              <div class="status-info">
-                <p class="status-title">AIR QUALITY SYSTEM</p>
-                <p class="status-value s-green">Acceptable</p>
-              </div>
-            </div>
-            
-            <div class="banner-divider"></div>
-            
-            <div class="banner-detail">
-              <span class="detail-label">CURRENT STATUS</span>
-              <span class="detail-value text-green">Satisfactory</span>
-            </div>
-            
-            <div class="banner-divider"></div>
-            
-            <div class="banner-detail">
-              <span class="detail-label">AQI LEVEL</span>
-              <span class="detail-value text-white">93 AQI</span>
-            </div>
-            
-            <div class="banner-divider"></div>
-            
-            <div class="banner-right-info">
-              <span class="live-dot"></span>
-              <p class="banner-desc">Air quality is considered satisfactory, and air pollution poses little or no risk in the living environment.</p>
-            </div>
-          </div>
-        </div><!-- /status-grid -->
-
-        <!-- Sensor Cards Row -->
-        <div class="sensor-row">
-
-          <!-- Temperature -->
-          <div class="sensor-card temp-card">
-            <div class="sensor-top">
-              <p class="sensor-title">TEMPERATURE</p>
-              <div class="sensor-icon-wrap">
-                <!-- Thermometer: tall tube + large bulb + tick marks + sun rays -->
-                <svg width="56" height="80" viewBox="0 0 56 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <defs>
-                    <linearGradient id="mercG" x1="28" y1="8" x2="28" y2="64" gradientUnits="userSpaceOnUse">
-                      <stop offset="0%" stop-color="#FF9000"/>
-                      <stop offset="100%" stop-color="#FF3300"/>
-                    </linearGradient>
-                  </defs>
-                  <!-- Tube outer shell -->
-                  <rect x="22" y="6" width="12" height="46" rx="6" fill="rgba(20,8,0,0.6)" stroke="#FF9C2A" stroke-width="1.8"/>
-                  <!-- Mercury fill (~65% hot — from bottom of tube up) -->
-                  <rect x="24.5" y="22" width="7" height="28" rx="3.5" fill="url(#mercG)"/>
-                  <!-- Top empty section of tube (dark) -->
-                  <rect x="24.5" y="8" width="7" height="14" rx="3.5" fill="rgba(255,120,0,0.08)"/>
-                  <!-- Bulb glow ring -->
-                  <circle cx="28" cy="63" r="12" fill="rgba(255,80,0,0.15)"/>
-                  <!-- Bulb body -->
-                  <circle cx="28" cy="63" r="9" fill="url(#mercG)"/>
-                  <!-- Bulb shine -->
-                  <circle cx="24.5" cy="59.5" r="2.5" fill="rgba(255,255,255,0.3)"/>
-                  <!-- Tick marks right -->
-                  <line x1="35" y1="14" x2="41" y2="14" stroke="#FF9C2A" stroke-width="1.6" stroke-linecap="round"/>
-                  <line x1="35" y1="22" x2="39" y2="22" stroke="#FF9C2A" stroke-width="1.2" stroke-linecap="round" opacity="0.6"/>
-                  <line x1="35" y1="30" x2="41" y2="30" stroke="#FF9C2A" stroke-width="1.6" stroke-linecap="round"/>
-                  <line x1="35" y1="38" x2="39" y2="38" stroke="#FF9C2A" stroke-width="1.2" stroke-linecap="round" opacity="0.6"/>
-                  <line x1="35" y1="46" x2="41" y2="46" stroke="#FF9C2A" stroke-width="1.6" stroke-linecap="round"/>
-                  <!-- Sun rays around bulb -->
-                  <line x1="15" y1="63" x2="10" y2="63" stroke="#FF9C2A" stroke-width="1.6" stroke-linecap="round" opacity="0.7"/>
-                  <line x1="16.5" y1="56.5" x2="12.5" y2="52.5" stroke="#FF9C2A" stroke-width="1.4" stroke-linecap="round" opacity="0.6"/>
-                  <line x1="16.5" y1="69.5" x2="12.5" y2="73.5" stroke="#FF9C2A" stroke-width="1.4" stroke-linecap="round" opacity="0.5"/>
-                </svg>
-              </div>
-              <p class="sensor-value s-orange">25.0<span class="sensor-unit">°C</span></p>
-              <div class="sensor-diff neutral">—</div>
-              <div class="sensor-badge badge-good"><span class="badge-emoji">😊</span> GOOD</div>
-            </div>
-            <div class="sensor-ideal-box">
-              <p class="sensor-ideal">Ideal: 22 – 28 °C</p>
-            </div>
-          </div>
-
-          <!-- Humidity -->
-          <div class="sensor-card humi-card">
-            <div class="sensor-top">
-              <p class="sensor-title">HUMIDITY</p>
-              <div class="sensor-icon-wrap">
-                <!-- Water drop -->
-                <svg width="52" height="68" viewBox="0 0 52 68" fill="none">
-                  <defs>
-                    <linearGradient id="dropG" x1="26" y1="8" x2="26" y2="58" gradientUnits="userSpaceOnUse">
-                      <stop stop-color="#60DDFF"/>
-                      <stop offset="1" stop-color="#0077CC"/>
-                    </linearGradient>
-                  </defs>
-                  <!-- Main drop shape -->
-                  <path d="M26 8 L43 34 C43 45.6 35.6 56 26 56 C16.4 56 9 45.6 9 34 Z" fill="url(#dropG)"/>
-                  <!-- Shine highlight -->
-                  <ellipse cx="20" cy="28" rx="4" ry="7" fill="rgba(255,255,255,0.25)" transform="rotate(-20,20,28)"/>
-                </svg>
-              </div>
-              <p class="sensor-value s-blue">54<span class="sensor-unit">%</span></p>
-              <div class="sensor-diff down">&#9660; 3% vs previous</div>
-              <div class="sensor-badge badge-good"><span class="badge-emoji">😊</span> GOOD</div>
-            </div>
-            <div class="sensor-ideal-box">
-              <p class="sensor-ideal">Ideal: 30 – 60 %</p>
-            </div>
-          </div>
-
-          <!-- CO2 -->
-          <div class="sensor-card co2-card">
-            <div class="sensor-top">
-              <p class="sensor-title">CO₂</p>
-              <div class="sensor-icon-wrap">
-                <!-- CO2 cloud with rounded-rect border -->
-                <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
-                  <!-- Cloud/rounded rect outer -->
-                  <rect x="4" y="10" width="56" height="40" rx="14" stroke="#FFD43B" stroke-width="2.8" fill="rgba(255,212,59,0.06)"/>
-                  <!-- CO2 text inside -->
-                  <text x="32" y="36" text-anchor="middle" font-family="Poppins" font-size="17" font-weight="800" fill="#FFD43B">CO₂</text>
-                </svg>
-              </div>
-              <p class="sensor-value s-yellow">838<span class="sensor-unit">ppm</span></p>
-              <div class="sensor-diff up">&#9650; 50 ppm vs previous</div>
-              <div class="sensor-badge badge-moderate"><span class="badge-emoji">😐</span> MODERATE</div>
-            </div>
-            <div class="sensor-ideal-box">
-              <p class="sensor-ideal">Ideal: Below 1000 ppm</p>
-            </div>
-          </div>
-
-          <!-- PM2.5 -->
-          <div class="sensor-card pm25-card">
-            <div class="sensor-top">
-              <p class="sensor-title">PM2.5</p>
-              <div class="sensor-icon-wrap">
-                <!-- Concentric circles with surrounding particles — PM2.5 icon -->
-                <svg width="58" height="58" viewBox="0 0 58 58" fill="none">
-                  <circle cx="29" cy="29" r="20" stroke="#2CF6FF" stroke-width="1.8" fill="none" opacity="0.25"/>
-                  <circle cx="29" cy="29" r="13" stroke="#2CF6FF" stroke-width="2" fill="none" opacity="0.5"/>
-                  <circle cx="29" cy="29" r="6"  stroke="#2CF6FF" stroke-width="2" fill="none" opacity="0.8"/>
-                  <!-- Outer ring particles -->
-                  <circle cx="29" cy="7"  r="3.5" fill="#2CF6FF"/>
-                  <circle cx="43" cy="13" r="3"   fill="#2CF6FF"/>
-                  <circle cx="50" cy="28" r="3.5" fill="#2CF6FF"/>
-                  <circle cx="43" cy="44" r="3"   fill="#2CF6FF"/>
-                  <circle cx="29" cy="50" r="3.5" fill="#2CF6FF"/>
-                  <circle cx="15" cy="44" r="3"   fill="#2CF6FF"/>
-                  <circle cx="8"  cy="28" r="3.5" fill="#2CF6FF"/>
-                  <circle cx="15" cy="13" r="3"   fill="#2CF6FF"/>
-                </svg>
-              </div>
-              <p class="sensor-value s-cyan">46.7<span class="sensor-unit">µg/m³</span></p>
-              <div class="sensor-diff down">&#9660; 1.3 µg/m³ vs previous</div>
-              <div class="sensor-badge badge-good"><span class="badge-emoji">😊</span> GOOD</div>
-            </div>
-            <div class="sensor-ideal-box">
-              <p class="sensor-ideal">Ideal: Below 50 µg/m³</p>
-            </div>
-          </div>
-
-          <!-- PM10 -->
-          <div class="sensor-card pm10-card">
-            <div class="sensor-top">
-              <p class="sensor-title">PM10</p>
-              <div class="sensor-icon-wrap">
-                <!-- Same concentric ring icon but blue and slightly larger particles -->
-                <svg width="58" height="58" viewBox="0 0 58 58" fill="none">
-                  <circle cx="29" cy="29" r="20" stroke="#009DFF" stroke-width="1.8" fill="none" opacity="0.25"/>
-                  <circle cx="29" cy="29" r="13" stroke="#009DFF" stroke-width="2" fill="none" opacity="0.5"/>
-                  <circle cx="29" cy="29" r="6"  stroke="#009DFF" stroke-width="2" fill="none" opacity="0.8"/>
-                  <!-- Outer ring particles (slightly larger) -->
-                  <circle cx="29" cy="7"  r="4"   fill="#009DFF"/>
-                  <circle cx="43" cy="13" r="3.5" fill="#009DFF"/>
-                  <circle cx="50" cy="28" r="4"   fill="#009DFF"/>
-                  <circle cx="43" cy="44" r="3.5" fill="#009DFF"/>
-                  <circle cx="29" cy="50" r="4"   fill="#009DFF"/>
-                  <circle cx="15" cy="44" r="3.5" fill="#009DFF"/>
-                  <circle cx="8"  cy="28" r="4"   fill="#009DFF"/>
-                  <circle cx="15" cy="13" r="3.5" fill="#009DFF"/>
-                </svg>
-              </div>
-              <p class="sensor-value s-blue">88<span class="sensor-unit">µg/m³</span></p>
-              <div class="sensor-diff down">&#9660; 3 µg/m³ vs previous</div>
-              <div class="sensor-badge badge-good"><span class="badge-emoji">😊</span> GOOD</div>
-            </div>
-            <div class="sensor-ideal-box">
-              <p class="sensor-ideal">Ideal: Below 100 µg/m³</p>
-            </div>
-          </div>
-
-          <!-- TVOC -->
-          <div class="sensor-card tvoc-card">
-            <div class="sensor-top">
-              <p class="sensor-title">TVOC</p>
-              <div class="sensor-icon-wrap">
-                <!-- 3 wavy vapor lines (TVOC = volatile organic compounds steam) -->
-                <svg width="56" height="64" viewBox="0 0 56 64" fill="none">
-                  <!-- Left wave -->
-                  <path d="M16 56 C16 50 12 46 12 40 C12 34 16 30 16 24 C16 18 12 14 12 8" stroke="#B26CFF" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-                  <!-- Center wave (taller) -->
-                  <path d="M28 60 C28 52 24 48 24 40 C24 32 28 28 28 20 C28 12 24 8 24 4" stroke="#C080FF" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-                  <!-- Right wave -->
-                  <path d="M40 56 C40 50 36 46 36 40 C36 34 40 30 40 24 C40 18 36 14 36 8" stroke="#B26CFF" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-                </svg>
-              </div>
-              <p class="sensor-value s-purple">330<span class="sensor-unit">ppb</span></p>
-              <div class="sensor-diff down">&#9660; 57 ppb vs previous</div>
-              <div class="sensor-badge badge-good"><span class="badge-emoji">😊</span> GOOD</div>
-            </div>
-            <div class="sensor-ideal-box">
-              <p class="sensor-ideal">Ideal: Below 500 ppb</p>
-            </div>
-          </div>
-
-        </div><!-- /sensor-row -->
-
-      </div><!-- /right-column -->
-    </section><!-- /row-top -->
-
-    <!-- ── Row 3: Chart + Stats ── -->
-    <section class="row-bottom">
-
-      <!-- AQI Trend Chart -->
-      <div class="chart-panel card">
-        <div class="chart-header">
-          <div class="chart-leaf">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <path d="M10 18C10 18 3 14 3 8C3 4 6.5 1.5 10 1.5C13.5 1.5 17 4 17 8C17 14 10 18 10 18Z" fill="url(#chartLeafG)"/>
-              <path d="M10 18L10 9" stroke="rgba(255,255,255,0.4)" stroke-width="1.2" stroke-linecap="round"/>
-              <defs>
-                <linearGradient id="chartLeafG" x1="3" y1="1.5" x2="17" y2="18" gradientUnits="userSpaceOnUse">
-                  <stop stop-color="#4ADE80"/><stop offset="1" stop-color="#166534"/>
-                </linearGradient>
-              </defs>
-            </svg>
-          </div>
-          <span class="chart-title">AQI TREND</span>
-          <span class="chart-subtitle">&nbsp;– LAST 24 HOURS</span>
-        </div>
-
-        <div class="chart-area">
-          <svg class="trend-svg" viewBox="0 0 840 180" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <linearGradient id="trendFill" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%"   stop-color="#A8E63C" stop-opacity="0.6"/>
-                <stop offset="60%"  stop-color="#4ADE80" stop-opacity="0.2"/>
-                <stop offset="100%" stop-color="#4ADE80" stop-opacity="0"/>
-              </linearGradient>
-              <filter id="trendGlow">
-                <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur"/>
-                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-              </filter>
-            </defs>
-            <!-- Grid lines -->
-            <line class="chart-grid-line" x1="0" y1="20"  x2="840" y2="20"  stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
-            <line class="chart-grid-line" x1="0" y1="60"  x2="840" y2="60"  stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
-            <line class="chart-grid-line" x1="0" y1="100" x2="840" y2="100" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
-            <line class="chart-grid-line" x1="0" y1="140" x2="840" y2="140" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
-            <!-- Y-axis labels -->
-            <text class="chart-label" x="0" y="23"  font-family="Poppins" font-size="11" fill="rgba(149,181,216,0.7)">150</text>
-            <text class="chart-label" x="0" y="63"  font-family="Poppins" font-size="11" fill="rgba(149,181,216,0.7)">100</text>
-            <text class="chart-label" x="0" y="103" font-family="Poppins" font-size="11" fill="rgba(149,181,216,0.7)">50</text>
-            <text class="chart-label" x="0" y="143" font-family="Poppins" font-size="11" fill="rgba(149,181,216,0.7)">0</text>
-            <!-- Trend area fill -->
-            <path d="M20,100 C60,98 100,90 130,75 C155,63 165,58 185,58
-                     C240,58 260,65 300,70 C340,75 360,80 400,85
-                     C440,90 480,95 520,96 C560,97 580,100 610,100
-                     C640,100 660,95 680,92 C700,89 710,88 720,88
-                     C740,88 760,90 780,91 C800,93 820,95 830,97
-                     L830,155 L20,155 Z"
-              fill="url(#trendFill)"/>
-            <!-- Trend line -->
-            <path d="M20,100 C60,98 100,90 130,75 C155,63 165,58 185,58
-                     C240,58 260,65 300,70 C340,75 360,80 400,85
-                     C440,90 480,95 520,96 C560,97 580,100 610,100
-                     C640,100 660,95 680,92 C700,89 710,88 720,88
-                     C740,88 760,90 780,91 C800,93 820,95 830,97"
-              stroke="#A8E63C" stroke-width="2.5" fill="none" stroke-linecap="round"
-              filter="url(#trendGlow)"/>
-            <!-- MAX marker -->
-            <circle class="chart-marker" cx="185" cy="58" r="7" fill="#0A1F35" stroke="#A8E63C" stroke-width="2"/>
-            <rect x="155" y="38" width="72" height="22" rx="6" fill="#FF9C2A"/>
-            <text x="191" y="53" text-anchor="middle" font-family="Poppins" font-size="11" font-weight="700" fill="white">MAX 102</text>
-            <!-- MIN marker -->
-            <circle class="chart-marker" cx="610" cy="100" r="7" fill="#0A1F35" stroke="#A8E63C" stroke-width="2"/>
-            <rect x="582" y="108" width="60" height="22" rx="6" fill="#22C55E"/>
-            <text x="612" y="123" text-anchor="middle" font-family="Poppins" font-size="11" font-weight="700" fill="#061320">MIN 69</text>
-            <!-- Current value (end) -->
-            <circle class="chart-marker" cx="830" cy="97" r="7" fill="#0A1F35" stroke="#A8E63C" stroke-width="2.5"/>
-            <text x="828" y="88" text-anchor="middle" font-family="Poppins" font-size="16" font-weight="800" fill="#A8E63C">93</text>
+          <span>Dashboard</span>
+        </a>
+        <a href="#" class="nav-item">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
           </svg>
+          <span>Live Monitor</span>
+        </a>
+        <a href="#" class="nav-item">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="20" x2="18" y2="10"></line>
+            <line x1="12" y1="20" x2="12" y2="4"></line>
+            <line x1="6" y1="20" x2="6" y2="14"></line>
+          </svg>
+          <span>Analytics</span>
+        </a>
+        <a href="#" class="nav-item">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>
+          <span>Alerts</span>
+        </a>
+        <a href="#" class="nav-item">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+            <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+            <line x1="6" y1="6" x2="6.01" y2="6"></line>
+            <line x1="6" y1="18" x2="6.01" y2="18"></line>
+          </svg>
+          <span>Devices</span>
+        </a>
+        <a href="#" class="nav-item">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+          <span>Reports</span>
+        </a>
+        <a href="#" class="nav-item">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+          <span>Settings</span>
+        </a>
+        <a href="#" class="nav-item">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+          <span>Users</span>
+        </a>
+      </nav>
 
-          <div class="chart-xaxis">
-            <span>10:45 AM</span>
-            <span>01:45 PM</span>
-            <span>04:45 PM</span>
-            <span>07:45 PM</span>
-            <span>10:45 PM</span>
-            <span>01:45 AM</span>
-            <span>04:45 AM</span>
-            <span>07:45 AM</span>
-            <span>10:45 AM</span>
-          </div>
-        </div>
+      <div class="sidebar-footer">
+        <a href="#" class="nav-item">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+          <span>Help & Support</span>
+        </a>
+        <a href="#" class="nav-item">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+          <span>Logout</span>
+        </a>
       </div>
+    </aside>
 
-      <!-- Stats Sidebar -->
-      <div class="stats-sidebar">
-
-        <div class="stat-card card">
-          <div class="stat-icon trophy">
-            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-              <path d="M8 3H20V15C20 18.3 17.3 21 14 21C10.7 21 8 18.3 8 15V3Z" fill="url(#trophyG)" opacity="0.9"/>
-              <path d="M3 6H8V12C8 12 5 12 3 10C1.5 8.5 3 6 3 6Z" fill="#FFD43B" opacity="0.6"/>
-              <path d="M25 6H20V12C20 12 23 12 25 10C26.5 8.5 25 6 25 6Z" fill="#FFD43B" opacity="0.6"/>
-              <rect x="11" y="21" width="6" height="4" rx="1" fill="#FFD43B" opacity="0.8"/>
-              <rect x="8"  y="24" width="12" height="2.5" rx="1" fill="#FFD43B" opacity="0.7"/>
-              <defs>
-                <linearGradient id="trophyG" x1="8" y1="3" x2="20" y2="21" gradientUnits="userSpaceOnUse">
-                  <stop stop-color="#FFE566"/><stop offset="1" stop-color="#FF9C2A"/>
-                </linearGradient>
-              </defs>
-            </svg>
+    <!-- ═══════════════════════ MAIN CONTENT ═══════════════════════ -->
+    <div class="main-layout">
+      
+      <!-- ── Header ── -->
+      <header class="header">
+        <div class="header-left">
+          <h1 class="main-title">Air Quality Monitoring</h1>
+          <p class="subtitle">Living Room &bull; Chennai</p>
+        </div>
+        <div class="header-right">
+          <div class="live-badge">
+            <span class="live-dot"></span>
+            <span class="live-text">LIVE</span>
           </div>
-          <div class="stat-info">
-            <p class="stat-label">TODAY'S BEST</p>
+          <div class="header-divider"></div>
+          <div class="header-widget">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            <span id="live-time">11:16 AM</span>
           </div>
-          <div class="stat-right">
-            <p class="stat-num green-num">69</p>
-            <p class="stat-unit">AQI</p>
+          <div class="header-divider"></div>
+          <div class="header-widget">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            <span id="live-date">30 Jul 2026 &bull; Thursday</span>
           </div>
         </div>
+      </header>
 
-        <div class="stat-card card">
-          <div class="stat-icon chart-up">
-            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-              <rect x="3" y="18" width="4" height="7" rx="1" fill="#FF9C2A" opacity="0.7"/>
-              <rect x="9" y="13" width="4" height="12" rx="1" fill="#FF9C2A" opacity="0.85"/>
-              <rect x="15" y="8" width="4" height="17" rx="1" fill="#FF9C2A"/>
-              <rect x="21" y="3" width="4" height="22" rx="1" fill="#FF6B00"/>
-              <path d="M3 20L9 15L15 10L23 5" stroke="#FFD43B" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-          </div>
-          <div class="stat-info">
-            <p class="stat-label">TODAY'S PEAK</p>
-          </div>
-          <div class="stat-right">
-            <p class="stat-num orange-num">102</p>
-            <p class="stat-unit">AQI</p>
-          </div>
-        </div>
+      <!-- ── Dashboard Content ── -->
+      <main class="dashboard">
 
-        <div class="stat-card card">
-          <div class="stat-icon gauge-icon">
-            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-              <path d="M4 18 A10 10 0 0 1 24 18" stroke="#2CF6FF" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-              <path d="M4 18 A10 10 0 0 1 14 8" stroke="#2CF6FF" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.4"/>
-              <line x1="14" y1="18" x2="10" y2="12" stroke="white" stroke-width="2" stroke-linecap="round"/>
-              <circle cx="14" cy="18" r="2.5" fill="#2CF6FF"/>
-            </svg>
-          </div>
-          <div class="stat-info">
-            <p class="stat-label">24H AVERAGE</p>
-          </div>
-          <div class="stat-right">
-            <p class="stat-num cyan-num">93</p>
-            <p class="stat-unit">AQI</p>
-          </div>
-        </div>
+        <!-- ── Row 1: Gauge + Right Column ── -->
+        <section class="row-top">
 
-      </div>
-    </section>
+          <!-- AQI Gauge Panel -->
+          <div class="gauge-panel card">
+            <h2 class="card-title">Overall AQI</h2>
+            
+            <div class="gauge-wrap">
+              <svg class="gauge-svg" viewBox="0 0 320 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <radialGradient id="gaugeBg" cx="50%" cy="85%" r="70%">
+                    <stop offset="0%" stop-color="#E2E8F0" stop-opacity="0.5"/>
+                    <stop offset="100%" stop-color="#F8FAFC" stop-opacity="0"/>
+                  </radialGradient>
+                </defs>
 
-  </main>
+                <!-- Background glow -->
+                <ellipse cx="160" cy="178" rx="150" ry="90" fill="url(#gaugeBg)"/>
+
+                <!-- Track -->
+                <path class="gauge-track" d="M 32 178 A 128 128 0 0 1 288 178"
+                  stroke="#E2E8F0" stroke-width="34" fill="none" stroke-linecap="butt"/>
+
+                <!-- Arc segments (total length 402.1) -->
+                <!-- Seg 1: 0–50 Excellent (#10B981) draw=40.2 -->
+                <path d="M 32 178 A 128 128 0 0 1 288 178"
+                  stroke="#22C55E" stroke-width="34" fill="none" stroke-linecap="butt"
+                  stroke-dasharray="40.2 402.1" stroke-dashoffset="0"/>
+
+                <!-- Seg 2: 50–100 Good (#84CC16) draw=40.2 -->
+                <path d="M 32 178 A 128 128 0 0 1 288 178"
+                  stroke="#84CC16" stroke-width="34" fill="none" stroke-linecap="butt"
+                  stroke-dasharray="40.2 402.1" stroke-dashoffset="-40.2"/>
+
+                <!-- Seg 3: 100–200 Moderate (#EAB308) draw=80.4 -->
+                <path d="M 32 178 A 128 128 0 0 1 288 178"
+                  stroke="#EAB308" stroke-width="34" fill="none" stroke-linecap="butt"
+                  stroke-dasharray="80.4 402.1" stroke-dashoffset="-80.4"/>
+
+                <!-- Seg 4: 200–300 Poor (#F97316) draw=80.4 -->
+                <path d="M 32 178 A 128 128 0 0 1 288 178"
+                  stroke="#F97316" stroke-width="34" fill="none" stroke-linecap="butt"
+                  stroke-dasharray="80.4 402.1" stroke-dashoffset="-160.8"/>
+
+                <!-- Seg 5: 300–400 Severe (#EF4444) draw=80.4 -->
+                <path d="M 32 178 A 128 128 0 0 1 288 178"
+                  stroke="#EF4444" stroke-width="34" fill="none" stroke-linecap="butt"
+                  stroke-dasharray="80.4 402.1" stroke-dashoffset="-241.2"/>
+
+                <!-- Seg 6: 400–500 Hazardous (#A855F7) draw=80.4 -->
+                <path d="M 32 178 A 128 128 0 0 1 288 178"
+                  stroke="#A855F7" stroke-width="34" fill="none" stroke-linecap="butt"
+                  stroke-dasharray="80.4 402.1" stroke-dashoffset="-321.6"/>
+
+                <!-- Scale labels -->
+                <text x="18"  y="205" fill="#64748B" font-size="11" font-family="Poppins" font-weight="700" text-anchor="middle">0</text>
+                <text x="52"  y="62"  fill="#64748B" font-size="11" font-family="Poppins" font-weight="700" text-anchor="middle">100</text>
+                <text x="160" y="22"  fill="#64748B" font-size="11" font-family="Poppins" font-weight="700" text-anchor="middle">200</text>
+                <text x="268" y="62"  fill="#64748B" font-size="11" font-family="Poppins" font-weight="700" text-anchor="middle">300</text>
+                <text x="310" y="148" fill="#64748B" font-size="11" font-family="Poppins" font-weight="700" text-anchor="middle">400</text>
+                <text x="302" y="205" fill="#64748B" font-size="11" font-family="Poppins" font-weight="700" text-anchor="middle">500</text>
+
+                <!-- Tapered Stubby Needle (points to 93 via rotation) -->
+                <path class="gauge-needle" d="M 160 174.5 L 115 176.5 A 1.5 1.5 0 0 0 115 179.5 L 160 181.5 Z"
+                  fill="#1E293B" transform="rotate(33.5, 160, 178)"/>
+                <!-- Needle pivot -->
+                <circle class="gauge-pivot-outer" cx="160" cy="178" r="8" fill="#1E293B"/>
+                <circle class="gauge-pivot-inner" cx="160" cy="178" r="3.5" fill="#FFFFFF"/>
+
+                <!-- Center Readouts (positioned to prevent needle overlap) -->
+                <text x="160" y="145" fill="#111827" font-size="52" font-family="Poppins" font-weight="800" text-anchor="middle">93</text>
+                <text x="160" y="202" fill="#16A34A" font-size="16" font-family="Poppins" font-weight="700" text-anchor="middle">Satisfactory</text>
+              </svg>
+            </div>
+
+            <!-- Legend -->
+            <div class="gauge-legend">
+              <div class="legend-item"><span class="legend-dot" style="background:#22C55E"></span><span class="legend-lbl">0–50 Excellent</span></div>
+              <div class="legend-item"><span class="legend-dot" style="background:#84CC16"></span><span class="legend-lbl">51–100 Good</span></div>
+              <div class="legend-item"><span class="legend-dot" style="background:#EAB308"></span><span class="legend-lbl">101–200 Moderate</span></div>
+              <div class="legend-item"><span class="legend-dot" style="background:#F97316"></span><span class="legend-lbl">201–300 Poor</span></div>
+              <div class="legend-item"><span class="legend-dot" style="background:#EF4444"></span><span class="legend-lbl">301–400 Severe</span></div>
+              <div class="legend-item"><span class="legend-dot" style="background:#A855F7"></span><span class="legend-lbl">401–500 Hazardous</span></div>
+            </div>
+          </div>
+
+          <!-- Right column: status banner + sensor cards stacked -->
+          <div class="right-column">
+
+            <!-- System Status Banner -->
+            <div class="status-banner card">
+              <div class="banner-left">
+                <div class="banner-icon-wrap">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#16A34A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="m9 11 2 2 4-4"></path></svg>
+                </div>
+                <div class="banner-main-text">
+                  <span class="banner-headline">Air quality is satisfactory with low health risk.</span>
+                  <div class="banner-info-row">
+                    <div class="info-group">
+                      <span class="info-label">System status</span>
+                      <span class="info-value text-green">Acceptable</span>
+                    </div>
+                    <div class="banner-column-divider"></div>
+                    <div class="info-group">
+                      <span class="info-label">Current status</span>
+                      <span class="info-value text-green">Satisfactory</span>
+                    </div>
+                    <div class="banner-column-divider"></div>
+                    <div class="info-group">
+                      <span class="info-label">AQI level</span>
+                      <span class="info-value text-dark">93</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Sensor Cards Row -->
+            <div class="sensor-row">
+
+              <!-- Temperature -->
+              <div class="sensor-card temp-card">
+                <div class="sensor-icon-wrap">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#F97316" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"></path></svg>
+                </div>
+                <span class="sensor-title">Temperature</span>
+                <span class="sensor-value s-orange">25.0<span class="sensor-unit">°C</span></span>
+                <span class="sensor-diff down">&darr; 3% lower than previous</span>
+                <div class="sensor-badge badge-good">Good</div>
+                <span class="sensor-ideal">Ideal 22–28 °C</span>
+              </div>
+
+              <!-- Humidity -->
+              <div class="sensor-card humi-card">
+                <div class="sensor-icon-wrap">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a7 7 0 0 0 7-7c0-4.3-7-13-7-13S5 10.7 5 15a7 7 0 0 0 7 7z"></path></svg>
+                </div>
+                <span class="sensor-title">Humidity</span>
+                <span class="sensor-value s-blue">54<span class="sensor-unit">%</span></span>
+                <span class="sensor-diff down">&darr; 3% lower than previous</span>
+                <div class="sensor-badge badge-good">Good</div>
+                <span class="sensor-ideal">Ideal 30–60%</span>
+              </div>
+
+              <!-- CO2 -->
+              <div class="sensor-card co2-card">
+                <div class="sensor-icon-wrap">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19A3.5 3.5 0 0 0 21 15.5c0-2.79-2.54-4.5-5-4.5-.42-1.89-2.18-3.5-4.5-3.5C8.82 7.5 7 9.82 7 12.25c-1.37.73-2 2.07-2 3.25A3.5 3.5 0 0 0 8.5 19h9z"></path></svg>
+                </div>
+                <span class="sensor-title">CO₂</span>
+                <span class="sensor-value s-yellow">838<span class="sensor-unit">ppm</span></span>
+                <span class="sensor-diff up">&uarr; 50 ppm higher than previous</span>
+                <div class="sensor-badge badge-moderate">Moderate</div>
+                <span class="sensor-ideal">Ideal below 1,000 ppm</span>
+              </div>
+
+              <!-- PM2.5 -->
+              <div class="sensor-card pm25-card">
+                <div class="sensor-icon-wrap">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#06B6D4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+                </div>
+                <span class="sensor-title">PM2.5</span>
+                <span class="sensor-value s-cyan">46.7<span class="sensor-unit">&micro;g/m&sup3;</span></span>
+                <span class="sensor-diff down">&darr; 1.3 &micro;g/m&sup3; lower than previous</span>
+                <div class="sensor-badge badge-good">Good</div>
+                <span class="sensor-ideal">Ideal below 50 &micro;g/m&sup3;</span>
+              </div>
+
+              <!-- PM10 -->
+              <div class="sensor-card pm10-card">
+                <div class="sensor-icon-wrap">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+                </div>
+                <span class="sensor-title">PM10</span>
+                <span class="sensor-value s-blue">88<span class="sensor-unit">&micro;g/m&sup3;</span></span>
+                <span class="sensor-diff down">&darr; 3 &micro;g/m&sup3; lower than previous</span>
+                <div class="sensor-badge badge-good">Good</div>
+                <span class="sensor-ideal">Ideal below 100 &micro;g/m&sup3;</span>
+              </div>
+
+              <!-- TVOC -->
+              <div class="sensor-card tvoc-card">
+                <div class="sensor-icon-wrap">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5v14M7 9v6"></path></svg>
+                </div>
+                <span class="sensor-title">TVOC</span>
+                <span class="sensor-value s-purple">330<span class="sensor-unit">ppb</span></span>
+                <span class="sensor-diff down">&darr; 57 ppb lower than previous</span>
+                <div class="sensor-badge badge-good">Good</div>
+                <span class="sensor-ideal">Ideal below 500 ppb</span>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        <!-- ── Row 2: Chart + Stats Sidebar ── -->
+        <section class="row-bottom">
+
+          <!-- AQI Trend Chart -->
+          <div class="chart-panel card">
+            <div class="chart-header">
+              <h2 class="card-title">AQI trend</h2>
+              <div class="chart-filter">
+                <select class="filter-select">
+                  <option>Last 24 hours</option>
+                  <option>Last 7 days</option>
+                  <option>Last 30 days</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="chart-area">
+              <svg class="trend-svg" viewBox="0 0 840 180" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="trendFill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#22C55E" stop-opacity="0.35"/>
+                    <stop offset="100%" stop-color="#22C55E" stop-opacity="0"/>
+                  </linearGradient>
+                </defs>
+
+                <!-- Grid lines -->
+                <line class="chart-grid-line" x1="0" y1="20"  x2="840" y2="20"  stroke="rgba(0,0,0,0.05)" stroke-width="1" stroke-dasharray="3,3"/>
+                <line class="chart-grid-line" x1="0" y1="60"  x2="840" y2="60"  stroke="rgba(0,0,0,0.05)" stroke-width="1" stroke-dasharray="3,3"/>
+                <line class="chart-grid-line" x1="0" y1="100" x2="840" y2="100" stroke="rgba(0,0,0,0.05)" stroke-width="1" stroke-dasharray="3,3"/>
+                <line class="chart-grid-line" x1="0" y1="140" x2="840" y2="140" stroke="rgba(0,0,0,0.05)" stroke-width="1" stroke-dasharray="3,3"/>
+
+                <!-- Y-axis labels -->
+                <text class="chart-label" x="0" y="23"  font-family="Poppins" font-size="11" font-weight="500" fill="#64748B">150</text>
+                <text class="chart-label" x="0" y="63"  font-family="Poppins" font-size="11" font-weight="500" fill="#64748B">100</text>
+                <text class="chart-label" x="0" y="103" font-family="Poppins" font-size="11" font-weight="500" fill="#64748B">50</text>
+                <text class="chart-label" x="0" y="143" font-family="Poppins" font-size="11" font-weight="500" fill="#64748B">0</text>
+
+                <!-- Area fill -->
+                <path d="M20,100 C60,98 100,90 130,75 C155,63 165,58 185,58
+                         C240,58 260,65 300,70 C340,75 360,80 400,85
+                         C440,90 480,95 520,96 C560,97 580,100 610,100
+                         C640,100 660,95 680,92 C700,89 710,88 720,88
+                         C740,88 760,90 780,91 C800,93 820,95 830,97
+                         L830,165 L20,165 Z"
+                  fill="url(#trendFill)"/>
+
+                <!-- Trend line -->
+                <path d="M20,100 C60,98 100,90 130,75 C155,63 165,58 185,58
+                         C240,58 260,65 300,70 C340,75 360,80 400,85
+                         C440,90 480,95 520,96 C560,97 580,100 610,100
+                         C640,100 660,95 680,92 C700,89 710,88 720,88
+                         C740,88 760,90 780,91 C800,93 820,95 830,97"
+                  stroke="#16A34A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+
+                <!-- PEAK Marker (102) -->
+                <circle cx="185" cy="58" r="4.5" fill="#FFFFFF" stroke="#16A34A" stroke-width="2"/>
+                <rect x="150" y="24" width="70" height="20" rx="4" fill="#16A34A"/>
+                <text x="185" y="38" text-anchor="middle" font-family="Poppins" font-size="10.5" font-weight="700" fill="white">Peak 102</text>
+
+                <!-- MIN Marker (69) -->
+                <circle cx="610" cy="100" r="4.5" fill="#FFFFFF" stroke="#16A34A" stroke-width="2"/>
+                <rect x="575" y="108" width="70" height="20" rx="4" fill="#16A34A"/>
+                <text x="610" y="122" text-anchor="middle" font-family="Poppins" font-size="10.5" font-weight="700" fill="white">Minimum 69</text>
+
+                <!-- CURRENT Marker (93) -->
+                <circle cx="830" cy="97" r="4.5" fill="#FFFFFF" stroke="#16A34A" stroke-width="2"/>
+                <rect x="795" y="74" width="70" height="20" rx="4" fill="#16A34A"/>
+                <text x="830" y="88" text-anchor="middle" font-family="Poppins" font-size="10.5" font-weight="700" fill="white">Current 93</text>
+              </svg>
+
+              <div class="chart-xaxis">
+                <span>10:45 AM</span>
+                <span>01:45 PM</span>
+                <span>04:45 PM</span>
+                <span>07:45 PM</span>
+                <span>10:45 PM</span>
+                <span>01:45 AM</span>
+                <span>04:45 AM</span>
+                <span>07:45 AM</span>
+                <span>10:45 AM</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stats Stack -->
+          <div class="stats-sidebar">
+
+            <div class="stat-card card">
+              <div class="stat-icon-wrap bg-light-green">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55-.45 1-1 1H4v2h16v-2h-5c-.55 0-1-.45-1-1v-2.34"></path><path d="M12 2a6.39 6.39 0 0 0-6 6.5C6 14.87 12 18 12 18s6-3.13 6-9.5A6.39 6.39 0 0 0 12 2z"></path></svg>
+              </div>
+              <div class="stat-main">
+                <span class="stat-label">Today's best</span>
+                <span class="stat-value text-green">69 <span class="stat-unit">AQI</span></span>
+              </div>
+            </div>
+
+            <div class="stat-card card">
+              <div class="stat-icon-wrap bg-light-orange">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F97316" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+              </div>
+              <div class="stat-main">
+                <span class="stat-label">Today's peak</span>
+                <span class="stat-value text-orange">102 <span class="stat-unit">AQI</span></span>
+              </div>
+            </div>
+
+            <div class="stat-card card">
+              <div class="stat-icon-wrap bg-light-blue">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3.34 19a10 10 0 1 1 17.32 0"></path><line x1="12" y1="14" x2="12" y2="8"></line><circle cx="12" cy="14" r="2"></circle></svg>
+              </div>
+              <div class="stat-main">
+                <span class="stat-label">24-hour average</span>
+                <span class="stat-value text-blue">93 <span class="stat-unit">AQI</span></span>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
 
   <script>
     function updateClock() {
       const now = new Date();
-      const months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
-      const days   = ['SUNDAY','MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY'];
+      const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      const days   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
       let h = now.getHours(), m = now.getMinutes();
       const ampm = h >= 12 ? 'PM' : 'AM';
       h = h % 12 || 12;
       const timeStr = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')} ${ampm}`;
-      const dateStr = `${String(now.getDate()).padStart(2,'0')} ${months[now.getMonth()]} ${now.getFullYear()}\u00a0|\u00a0${days[now.getDay()]}`;
+      const dateStr = `${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()} \u2022 ${days[now.getDay()]}`;
       document.getElementById('live-time').textContent = timeStr;
       document.getElementById('live-date').textContent = dateStr;
     }
     updateClock();
     setInterval(updateClock, 1000);
-
-    // Theme toggle interaction
-    const themeToggle = document.getElementById('theme-toggle');
-    themeToggle.addEventListener('click', () => {
-      const isLight = document.documentElement.classList.toggle('light-theme');
-      localStorage.setItem('theme', isLight ? 'light' : 'dark');
-    });
   </script>
 
 </body>
